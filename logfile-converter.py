@@ -5,59 +5,31 @@ import glob
 # find the log files to open
 all_logs = glob.glob('*.txt')
 
-log_lines = []
-
 # open the log files as read only
 with open (all_logs[0], 'rt') as log_file:
+    for line in log_file:
 
-    # read the files and store as "log"
-    log = log_file.read()
+        # remove everything before the last >
+        clean_line = re.sub(r'.*>', '', line)
+        # remove uneeded special characters, dumps
+        # learn to combine regex
+        clean_line = re.sub('[-=<>]', '', clean_line)
+        # clean_up = [line for log_file in line if not line.startswith('=')]
 
-    # for log in log_file:
+        # remove everything before the last > from the line
+        # clean_line = re.sub(r'.*>', '', line).replace('=','').replace('-','').replace('Queue Dump','').replace(r'(*)','').strip()
 
-    # split text at linebreaks
-    log_line = log.split('\n')
-    log_line = re.sub('[-=<>]', '', log)
-    # log_line[4:8]
-
-    for log in log_line:
-
-        print(log)
-
+        # clean_list = [clean_line for clean_line in line if not clean_line.startswith(('=','-'))]
 
 
-filename = 'log-file' + '.csv'
-new_csv = open(filename, 'w')
-
-new_csv.write(log_line)
-new_csv.close()
-
-
-    # title, handle = s.split()
-
-
-        # log = log_file.read()
-
-        # header, cells = log.split(':')
-        # log
-        # log = re.sub('[-=<>]', '', log)
-        # log.split('\n')
-        # print(log)
-    # the above is working to remove special characters, unclear if the split is happening, suggest writing to file to check
-
-    # for log in log_file:
-
-        # log_lines.append(log)
-    # for log_line in log_file:
-
-        # first, let's remove characters we don't need
-        # line_clean = re.sub('[-=<>]', '', log_line)
-        # str.lower(line_clean)
-
-        # log_lines.append(line_clean)
         
-# only print the lines we need - we will use this later
-# print(log_lines[1:-1])
-    
+        print(clean_line)
 
+
+
+# filename = 'log-file' + '.csv'
+# new_csv = open(filename, 'w')
+# needs string not list
+# new_csv.write(clean_line)
+# new_csv.close()
 
