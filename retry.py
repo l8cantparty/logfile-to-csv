@@ -17,6 +17,16 @@ with open (all_logs[0], 'r') as log_file:
     clean_log = str.maketrans("", "", "=-<>")
 
     log_reader = [s.translate(clean_log) for s in log_reader]
+
+    # clean_list = str()
+    # remove lines with uneeded content
+    # figure out how to combine these
+    log_reader = [x for x in log_reader if "MSDKDecoderWithMCDemux" not in x]
+    log_reader = [x for x in log_reader if "Dump" not in x]
+
+# >>> stringlist[:] = [x for x in stringlist if "Two" not in x]
+# >>> stringlist
+# ['elementOne', 'elementThree']
    
     print(log_reader[3:-5])
 
