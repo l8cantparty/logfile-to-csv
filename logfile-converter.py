@@ -1,64 +1,49 @@
+# import regex, glob, csv modules
 import re
 import csv
 import glob
 
 # find the log files to open
 all_logs = glob.glob('*.txt')
-# log_list = list()        
 
 # open the log files as read only
-with open (all_logs[0], 'rt') as log_file:
-    log_reader = log_file.readlines()
-    # log_reader = list(filter(None, log_reader))
+with open (all_logs[0], 'r') as log_file:
+    
+    log_list = log_file.readlines()
+
+    clean_string = str.maketrans('', '', '=-<>')
+
+    log_list = [s.translate(clean_string) for s in log_list]
+
+    # remove lines with uneeded content
+    # figure out how to combine these
+    log_list = [x for x in log_list if 'MSDKDecoderWithMCDemux' not in x]
+    log_list = [x for x in log_list if 'Dump' not in x]
+
+    # remove "Ticks = 216485[...]" from the beginning of each line 
+    log_list = [x[52:] for x in log_list]
+
+    # remove the extra space before every other line
+    log_list = [x.lstrip() for x in log_list]
+
+    # throw out line breaks
+    log_list = [x.strip() for x in log_list]
+
+    # a v janky way to fix line breaks and commas
+    log_list = [x.replace('Frames dropped','\n Frames dropped').replace('Avg Prefetch',', Avg Prefetch').replace(' Frames dropped during playback: ','').replace(' Preroll(ms): ','').replace(' Avg Prefetch(ms): ','').replace(' Avg Render(ms): ','').replace(' Avg Display FPS: ','') for x in log_list]
+    # log_list = [x.replace('Avg Prefetch',', Avg Prefetch') for x in log_list]
+
+    print(log_list[3:])
 
 
+header = ['Frames dropped during playback,','Preroll(ms),','Avg Prefetch(ms),','Avg Render(ms),','Avg Display FPS,\n']
+# how to move header items to top
 
-    for line in log_reader:
-        # log_reader = list(filter(None, log_reader))
-        clean_line = line.split('\n')
-
-        # remove everything before the last >
-        # clean_line = re.sub(r'.*>', '', line)
-        # remove additional special characters
-        clean_line = re.sub('[-=<>]', '', line)
-        # split at line breaks
-        # a_line = clean_line.split('\n')
-        # a_line = clean_line.split(':')
-
-        # remove empty lines
-        # a_line.split(':')
-        print(clean_line)
-
-        # clean_line = re.sub(r'.*>', '', line)
-
-
-    # for line_count, line in enumerate(log_file[3:-5]):
-        # print("Line {}: {}".format(line_count, line))
-    # for line in log_file:
-        # list(enumerate(line))
-        # line = re.sub(r'.*>', '', line)
-
-        # remove everything before the last >
-        # clean_line = re.sub(r'.*>', '', line)
-        # learn to combine regex    
-        # line = re.sub('[-=<>]', '', line)
-
-        # clean_line = clean_line.split('\n')
-
-        # log_list.append(line.strip()) 
-
-        # print(line)
-
-
-
+# improve by getting file name from the log file itself
 filename = 'log-file' + '.csv'
 new_csv = open(filename, 'w')
-# needs string not list
-new_csv.writelines(line)
-new_csv.close()
 
-# Get the all the lines in file in a list 
-# log_list = list()        
-# with open ("data.txt", "r") as myfile:
-# for line in myfile:
-# log_list.append(line.strip()) 
+new_csv.writelines(header)
+# skip the first 3 lines of the log sicne they are uneeded
+new_csv.writelines(log_list[3:])
+new_csv.close()
